@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luna – Period & Cramp Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Young+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="lock" class="lock" hidden><div class="card"><h2>Luna is locked</h2><input type="password" id="pinIn" inputmode="numeric" maxlength="4" placeholder="4-digit PIN"><button class="primary" id="unlockBtn">Unlock</button><p class="note" id="pinErr"></p></div></div>
+<header class="top">
+  <div><h1>Luna</h1><p>Know your cycle. Care for your body.</p></div>
+  <button class="ghost" id="themeBtn">Dark mode</button>
+</header>
+<nav class="tabs" id="tabs">
+  <button data-tab="today" class="on">Today</button><button data-tab="cal">Calendar</button><button data-tab="log">Log</button><button data-tab="ins">Insights</button><button data-tab="care">Care</button>
+</nav>
+<div id="alert" class="alert" role="alert" hidden></div>
+<main>
+<!-- TODAY -->
+<div class="tab" id="tab-today">
+  <section class="card" id="setup"><h2>Start tracking</h2>
+    <div class="fields">
+      <label>First day of last period<input type="date" id="lastStart"></label>
+      <label>Usual cycle length (days)<input type="number" id="cycleLen" min="20" max="45" value="28"></label>
+      <label>Period length (days)<input type="number" id="periodLen" min="2" max="10" value="5"></label>
+    </div>
+    <button class="primary" id="saveBtn">Save</button>
+  </section>
+  <div id="todayBody" hidden>
+    <section class="hero card">
+      <div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="track"/><circle cx="60" cy="60" r="52" class="prog" id="prog"/></svg>
+        <div class="ringtext"><span class="big" id="dayNum">–</span><span class="small" id="dayOf"></span></div></div>
+      <div class="herotext"><h2 id="phaseName"></h2><p id="phaseDesc"></p><p class="next" id="nextInfo"></p></div>
+    </section>
+    <section class="card late" id="lateCard" hidden>
+      <h2 id="lateTitle"></h2><p id="lateText"></p>
+      <h3>Quick check</h3>
+      <div class="q"><p>Could you be pregnant?</p><div class="opts" data-k="preg"><button data-v="no">No</button><button data-v="maybe">Maybe</button><button data-v="yes">Yes</button></div></div>
+      <div class="q"><p>Any recent changes?</p><div class="checks" id="lateCh">
+        <label><input type="checkbox" value="Stress">Stress</label><label><input type="checkbox" value="Travel">Travel</label><label><input type="checkbox" value="Illness">Illness</label>
+        <label><input type="checkbox" value="Weight change">Weight change</label><label><input type="checkbox" value="Heavy exercise">Heavy exercise</label><label><input type="checkbox" value="Birth control change">Birth control change</label><label><input type="checkbox" value="Poor sleep">Poor sleep</label></div></div>
+      <div class="q"><p>Severe pain, very heavy bleeding or fainting?</p><div class="opts" data-k="warn"><button data-v="no">No</button><button data-v="yes">Yes</button></div></div>
+      <button class="primary" id="lateGo">Get guidance</button>
+      <div id="lateResult" class="result" hidden></div>
+      <div class="row" style="margin-top:1rem"><button class="primary" id="startToday">My period started today</button><button class="ghost" id="snooze">Remind me in 3 days</button></div>
+    </section>
+    <section class="card"><h2>Eat today</h2><ul id="eatList" class="tips"></ul><h3>Go easy on</h3><ul id="avoidList" class="tips"></ul></section>
+    <section class="card"><h2>Hydration</h2><p class="note" id="waterTip"></p><div class="glasses" id="glasses"></div>
+      <div class="row"><button class="primary" id="addGlass">I drank a glass</button>
+      <label class="inline">Remind me every <select id="remindEvery"><option value="0">never</option><option value="1">1 min (test)</option><option value="60">1 hour</option><option value="90">90 min</option><option value="120">2 hours</option></select></label></div></section>
+    <section class="card"><h2>Self-care checklist</h2><div id="care" class="checks"></div></section>
+    <section class="card"><h2>Mood check-in</h2><div id="quiz"></div><div id="moodResult" class="result" hidden></div></section>
+  </div>
+</div>
+<!-- CALENDAR -->
+<div class="tab" id="tab-cal" hidden>
+  <section class="card"><div class="row between"><button class="ghost" id="prevM">‹</button><h2 id="monthName"></h2><button class="ghost" id="nextM">›</button></div>
+    <div class="cal" id="cal"></div>
+    <p class="legend"><i class="d period"></i>Period <i class="d pred"></i>Predicted <i class="d fert"></i>Fertile window</p>
+    <p class="note">Tap a day to log how you feel on it.</p></section>
+</div>
+<!-- LOG -->
+<div class="tab" id="tab-log" hidden>
+  <section class="card"><h2 id="logDate"></h2>
+    <button class="ghost" id="startBtn"></button>
+    <h3>Flow</h3><div class="opts" id="flow"></div>
+    <h3>Cramp level (0 none – 5 severe)</h3><div class="scale" id="scale"></div><p class="note" id="crampTip"></p>
+    <h3>Symptoms</h3><div class="checks" id="sym"></div>
+    <h3>Notes</h3><textarea id="note" rows="3" placeholder="Anything else about today?"></textarea></section>
+</div>
+<!-- INSIGHTS -->
+<div class="tab" id="tab-ins" hidden>
+  <section class="card"><h2>Your cycle</h2><p id="stats"></p><p id="pattern" class="next"></p></section>
+  <section class="card"><h2>Cycle history</h2><canvas id="cycleChart" width="660" height="190"></canvas><p class="note">Bars are cycle lengths in days. The shaded band is the typical range (21 to 35 days).</p></section>
+  <section class="card"><h2>Mood history</h2><canvas id="moodChart" width="660" height="190"></canvas><p class="legend"><i class="d fert"></i>Stable <i class="d warnc"></i>Mild/moderate <i class="d period"></i>High swings</p></section>
+  <section class="card"><h2>Share with your doctor</h2><div class="row"><button class="primary" id="csvBtn">Download CSV</button><button class="ghost" onclick="window.print()">Print / save as PDF</button></div>
+    <h3>See a doctor if</h3><ul class="tips"><li>Bleeding soaks a pad or tampon every hour for several hours</li><li>Pain is severe or stops you from daily activity</li><li>Cycles are shorter than 21 or longer than 35 days, or periods stop for 3+ months</li><li>Periods last more than 7 days or you feel dizzy or faint</li></ul></section>
+</div>
+<!-- CARE -->
+<div class="tab" id="tab-care" hidden>
+  <section class="card"><h2>Cramp relief</h2><ul class="tips">
+    <li><b>Child's pose:</b> kneel, sit back on heels, reach forward, breathe slowly for 1 minute.</li>
+    <li><b>Cat-cow:</b> on hands and knees, arch and round your back with your breath, 10 rounds.</li>
+    <li><b>Reclining twist:</b> lie on your back, drop both knees to one side, 30 seconds each side.</li>
+    <li><b>Legs up the wall:</b> lie down with legs raised for 3 to 5 minutes.</li>
+    <li><b>Heat:</b> a warm pad on the lower belly for 15 to 20 minutes.</li></ul>
+    <h3>Breathing</h3><div class="breath" id="breath"><span id="breathTxt">Start</span></div><button class="ghost" id="breathBtn">Start / stop</button></section>
+  <section class="card"><h2>Supplement reminder</h2><div class="fields"><label>Name<input id="suppName" placeholder="e.g. Iron tablet"></label><label>Time<input type="time" id="suppTime"></label></div><button class="primary" id="suppBtn">Save reminder</button><p class="note" id="suppNote"></p></section>
+  <section class="card"><h2>Settings</h2><div class="row"><button class="ghost" id="notifyBtn">Turn on notifications</button></div>
+    <h3>PIN lock</h3><div class="row"><input type="password" id="pinNew" inputmode="numeric" maxlength="4" placeholder="4 digits"><button class="ghost" id="pinSet">Set PIN</button><button class="ghost" id="pinOff">Remove PIN</button></div>
+    <p class="note">The PIN hides the screen. Data stays on this device only.</p>
+    <h3>Reset</h3><button class="ghost" id="resetBtn">Delete all my data</button></section>
+</div>
+</main>
+<footer>Luna shares general wellness tips, not medical advice.</footer>
+<script src="script.js"></script>
+</body>
+</html>
